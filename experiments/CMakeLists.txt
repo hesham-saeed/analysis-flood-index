@@ -1,0 +1,8 @@
+cmake_minimum_required(VERSION 3.1.0)
+
+include_directories(third_party/boost)
+
+add_executable(rtree_vs_flood_uniform_data_uniform_query rtree_vs_flood_uniform_data_uniform_query.cpp)
+add_executable(rtree_vs_flood_uniform_data_skewed_query rtree_vs_flood_uniform_data_skewed_query.cpp)
+add_executable(rtree_vs_flood_skewed_data_uniform_query rtree_vs_flood_skewed_data_uniform_query.cpp)
+add_executable(rtree_vs_flood_skewed_data_skewed_query rtree_vs_flood_skewed_data_skewed_query.cpp)
