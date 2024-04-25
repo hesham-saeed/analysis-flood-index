@@ -131,12 +131,12 @@ int main()
         for (int i = 0; i < visitor.size(); i++)
             visitor[i].resize(records);
             
-        flood::GridFile flood(dimensions, records, grid_cell_size, dataset, queriesMD, true, 0);
+        flood::GridFile flood(dimensions, records, grid_cell_size, dataset, queriesMD);
 
         auto start = std::chrono::high_resolution_clock::now();
         for (int i = 0, c=1; i < queriesMD.size(); i+=2, c++)
         {
-            query_matches[c-1] = flood.range_query_recursive_with_state_main(dimensions, queriesMD[i], queriesMD[i + 1], visitor);
+            query_matches[c-1] = flood.range_query(dimensions, queriesMD[i], queriesMD[i + 1], visitor);
 
         }
         auto end = std::chrono::high_resolution_clock::now();

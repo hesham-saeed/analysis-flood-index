@@ -203,9 +203,7 @@ public:
 
 	GridFile(uint32_t dimensions, int num_records, int CELL_SIZE,
 		vector<uint32_t>& datasetMD,
-		std::vector<std::vector<uint32_t>>& queriesMD, 
-		bool sortedDimension = false, 
-		int sortingDimension = 0) {
+		std::vector<std::vector<uint32_t>>& queriesMD) {
 
 		this->num_records = num_records;
 		this->num_dimensions = dimensions;
@@ -231,8 +229,7 @@ public:
 		}
 
 		cout << "Sorting all grid cells..." << endl;
-		if (sortedDimension)
-			sortGridCells(sortingDimension);
+		sortGridCells(0);
 
 		for (int i = 1; i <= dimensions; i++) {
 			uint32_t mulfactor = 1;
@@ -712,7 +709,7 @@ private:
 
 public:
 
-	uint32_t range_query_recursive_with_state_main(uint32_t dim, vector<uint32_t> range_start,
+	uint32_t range_query(uint32_t dim, vector<uint32_t> range_start,
 		vector<uint32_t> range_end, vector<vector<uint32_t>>& visitor, uint32_t start = 0, uint32_t end = 0, int state = 0)
 	{
 		uint32_t sum = 0;
@@ -739,12 +736,12 @@ public:
 			rangeEndPos[i - 1] = attributeSlicersPointers[i - 1][tmpIndex2];
 		}
 
-		return range_query_recursive_with_state_cut(dim, r1, r2, visitor, start, end, state);
+		return range_query_recurse(dim, r1, r2, visitor, start, end, state);
 
 	}
 	
-
-	uint32_t range_query_recursive_with_state_cut(uint32_t dim, vector<uint32_t> range_start,
+private:
+	uint32_t range_query_recurse(uint32_t dim, vector<uint32_t> range_start,
 		vector<uint32_t> range_end, vector<vector<uint32_t>>& visitor, uint32_t start = 0, uint32_t end = 0, int state = 0)
 	{
 
@@ -774,7 +771,7 @@ public:
 		if (dim > 2)
 		{
 			while (start <= end) {
-				sum += range_query_recursive_with_state_cut(dim - 1, range_start, range_end, visitor, start, start, 1); //normal
+				sum += range_query_recurse(dim - 1, range_start, range_end, visitor, start, start, 1); //normal
 				start += mulfactorArr[dim - 1];
 			}
 		}
