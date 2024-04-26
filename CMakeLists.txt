@@ -14,6 +14,7 @@ SET(CMAKE_CXX_FLAGS_RELWITHDEBINFO  "-O2 -ggdb3")
 include_directories(include)
 include_directories(examples)
 include_directories(third_party/boost)
+include_directories(third_party/grid_files)
 
 add_executable(idx examples/example.cpp)
 add_subdirectory(experiments)
