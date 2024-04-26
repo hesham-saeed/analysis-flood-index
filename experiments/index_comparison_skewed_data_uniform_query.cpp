@@ -10,7 +10,9 @@
 #include <stdint.h>
 #include <random>
 #include "Flood.h"
+#include "GridFile.h"
 #include "query_generator.h"
+#include "utils.h"
 namespace bg = boost::geometry;
 namespace bgi = boost::geometry::index;
 typedef bg::model::point<uint32_t, 6, bg::cs::cartesian> multiDimensionalPoint;
@@ -24,7 +26,7 @@ int main()
     int records = 1e8;
     int grid_cell_size = 65536;
     int seed = 55;
-
+    int queries = 1000;
 
     /******************************************************************************/
     /* Dataset Generation */
@@ -60,7 +62,7 @@ int main()
         col_selectivities[i] = 0.13; //0.13 6 filters.
     for (int i=0;i<col_weights.size();i++)
         col_weights[i] = 1;
-    std::vector<vector<uint32_t>> queriesMD(2000);
+    std::vector<vector<uint32_t>> queriesMD(queries*2);
     qg.generateQueries(dimensions, dataset, col_selectivities,col_weights,queriesMD,seed,dimensions,dimensions);
     vector<uint64_t> query_matches(queriesMD.size()/2);
 
@@ -116,13 +118,39 @@ int main()
             rt->query(bgi::intersects(mybox), std::back_inserter(result2));
             query_matches[c-1] = result2.size();
         }
-        uint64_t avg_matches = std::accumulate(query_matches.begin(), query_matches.end(),0ULL);
         auto end = std::chrono::high_resolution_clock::now();
         auto duration = end - start;
-        cout << "avg query matches = " << avg_matches/query_matches.size()<<endl;
-        std::cout << "Range query elapsed time = "
-        << std::chrono::duration_cast<std::chrono::milliseconds>(duration).count()
-        << " millisecond" << std::endl;
+        uint64_t total_matches = std::accumulate(query_matches.begin(), query_matches.end(),0ULL);
+        double avg_query_time = std::chrono::duration_cast<std::chrono::milliseconds>(duration).count()/queries;
+        double avg_query_matches = total_matches/queries;
+        cout << "avg query matches = " << avg_query_matches <<endl;
+        std::cout << "Average Range query time = " << avg_query_time << " millisecond" << std::endl;
+        writeBenchmark("index-comparison.csv", "skewed_data_skewed_query", "R-Tree", avg_query_time, avg_query_matches);
+    }
+
+    /******************************************************************************/
+    /* Grid File */
+    /******************************************************************************/
+    {
+        vector<vector<uint32_t>> visitor(dimensions);
+        for (int i = 0; i < visitor.size(); i++)
+            visitor[i].resize(records);
+
+        gf::GridFile gridfile(dimensions, records, grid_cell_size, dataset);
+
+        auto start = std::chrono::high_resolution_clock::now();
+        for (int i = 0, c=1; i < queriesMD.size(); i+=2, c++)
+        {
+            query_matches[c-1] = gridfile.range_query(dimensions, queriesMD[i], queriesMD[i + 1], visitor);
+        }
+        auto end = std::chrono::high_resolution_clock::now();
+        auto duration = end - start;
+        uint64_t total_matches = std::accumulate(query_matches.begin(), query_matches.end(),0ULL);
+        double avg_query_time = std::chrono::duration_cast<std::chrono::milliseconds>(duration).count()/queries;
+        double avg_query_matches = total_matches/queries;
+        cout << "avg query matches = " << avg_query_matches <<endl;
+        std::cout << "Average Range query time = " << avg_query_time << " millisecond" << std::endl;
+        writeBenchmark("index-comparison.csv", "skewed_data_skewed_query", "GridFile", avg_query_time, avg_query_matches);
     }
 
 
@@ -144,11 +172,12 @@ int main()
         }
         auto end = std::chrono::high_resolution_clock::now();
         auto duration = end - start;
-        uint64_t avg_matches = std::accumulate(query_matches.begin(), query_matches.end(),0ULL);
-        cout << "avg query matches = " << avg_matches/query_matches.size()<<endl;
-        std::cout << "Range query elapsed time = "
-            << std::chrono::duration_cast<std::chrono::milliseconds>(duration).count()
-            << " milliseconds" << std::endl;
+        uint64_t total_matches = std::accumulate(query_matches.begin(), query_matches.end(),0ULL);
+        double avg_query_time = std::chrono::duration_cast<std::chrono::milliseconds>(duration).count()/queries;
+        double avg_query_matches = total_matches/queries;
+        cout << "avg query matches = " << avg_query_matches <<endl;
+        std::cout << "Average Range query time = " << avg_query_time << " millisecond" << std::endl;
+        writeBenchmark("index-comparison.csv", "skewed_data_skewed_query", "Flood", avg_query_time, avg_query_matches);
     }
     
     return 0;
