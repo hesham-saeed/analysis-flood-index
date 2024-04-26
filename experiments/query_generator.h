@@ -23,7 +23,7 @@ void generateQueries(
 	std::vector<std::vector<uint32_t>>& output_queries,
 	uint32_t seed, int min_filters, int max_filters)
 {
-	cout << "query generating "<< output_queries.size()/2 << " queries at seed = " << seed << endl;
+	cout << "query generating "<< output_queries.size()/2 << " queries at seed = " << seed <<"...."<< endl;
 	std::random_device rd;
 	//std::mt19937 gen(rd());
 	std::mt19937 gen(seed);
@@ -37,12 +37,12 @@ void generateQueries(
 		for (int j = 0; j < qdims; j++) // first column
             column_layout_dataset[j][i] = (dataset[j * dataset.size()/qdims + i]);
 
-    cout << "sorting" << endl;
+    //cout << "sorting" << endl;
 	/* Sorting each column */
 	for (int i = 0; i < qdims; i++)
 		std::sort(column_layout_dataset[i].begin(), column_layout_dataset[i].end());
 
-    cout << "sampling" << endl;
+    //cout << "sampling" << endl;
 	vector<vector<uint32_t>> query_samples(output_queries.size());
 	std::mt19937 gen1(seed);
 	uniform_int_distribution<uint32_t> num_attributes_distrib(min_filters, max_filters);
@@ -59,14 +59,14 @@ void generateQueries(
 		query_samples[i] = query_sample;
 	}
 
-    cout << "grouping" << endl;
+    //cout << "grouping" << endl;
 	std::mt19937 gen2(seed);
 	double largest_selectivity = *(std::max_element(column_selectivities.begin(), column_selectivities.end()));
 	uniform_int_distribution<uint32_t> dataset_distrib(0, (dataset.size()/qdims - 1) * (1 - largest_selectivity));
 	//auto rand = [&gen2, &key_distrib] { return key_distrib(gen2); };
 
 	// producing queries
-    cout << "producing"<<endl;
+    //cout << "producing"<<endl;
 	for (int i = 0; i < output_queries.size() - 1; i += 2)
 	{
 		vector<uint32_t> query_sample_start_interval(qdims);
