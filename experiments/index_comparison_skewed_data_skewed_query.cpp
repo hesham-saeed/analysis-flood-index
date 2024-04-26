@@ -117,9 +117,9 @@ int main()
             query_matches[c-1] = result2.size();
         }
         auto end = std::chrono::high_resolution_clock::now();
-        auto duration = end - start;
+        duration<double, std::milli> duration = end - start;
         uint64_t total_matches = std::accumulate(query_matches.begin(), query_matches.end(),0ULL);
-        double avg_query_time = std::chrono::duration_cast<std::chrono::milliseconds>(duration).count()/queries;
+        double avg_query_time = duration.count()/queries;
         double avg_query_matches = total_matches/queries;
         cout << "avg query matches = " << avg_query_matches <<endl;
         std::cout << "Average Range query time = " << avg_query_time << " millisecond" << std::endl;
@@ -142,9 +142,9 @@ int main()
             query_matches[c-1] = gridfile.range_query(dimensions, queriesMD[i], queriesMD[i + 1], visitor);
         }
         auto end = std::chrono::high_resolution_clock::now();
-        auto duration = end - start;
+        duration<double, std::milli> duration = end - start;
         uint64_t total_matches = std::accumulate(query_matches.begin(), query_matches.end(),0ULL);
-        double avg_query_time = std::chrono::duration_cast<std::chrono::milliseconds>(duration).count()/queries;
+        double avg_query_time = duration.count()/queries;
         double avg_query_matches = total_matches/queries;
         cout << "avg query matches = " << avg_query_matches <<endl;
         std::cout << "Average Range query time = " << avg_query_time << " millisecond" << std::endl;
@@ -168,9 +168,9 @@ int main()
 
         }
         auto end = std::chrono::high_resolution_clock::now();
-        auto duration = end - start;
+        duration<double, std::milli> duration = end - start;
         uint64_t total_matches = std::accumulate(query_matches.begin(), query_matches.end(),0ULL);
-        double avg_query_time = std::chrono::duration_cast<std::chrono::milliseconds>(duration).count()/queries;
+        double avg_query_time = duration.count()/queries;
         double avg_query_matches = total_matches/queries;
         cout << "avg query matches = " << avg_query_matches <<endl;
         std::cout << "Average Range query time = " << avg_query_time << " millisecond" << std::endl;
