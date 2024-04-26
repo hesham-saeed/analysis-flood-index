@@ -19,7 +19,7 @@ Flood is an adaptation of **Grid Files**, and consists of three ideas:
 
 ### Example
 *A complete example is in the examples folder*
-```
+```cpp
 int dimensions = 3;
 int records = 1e7;
 int grid_cell_size = 16384;
