@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.1.0)
 
-include_directories(third_party/boost)
+include_directories(third_party/boost/boost)
 
 add_executable(index_comparison_uniform_data_uniform_query index_comparison_uniform_data_uniform_query.cpp)
 add_executable(index_comparison_uniform_data_skewed_query index_comparison_uniform_data_skewed_query.cpp)
