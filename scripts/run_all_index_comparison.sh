@@ -1,4 +1,4 @@
-#!bash
+#!/bin/bash
 
 EXPERIMENT='index_comparison'
 OUTPUT_FILE='index-comparison.csv'
